@@ -111,7 +111,7 @@ export function Step3Result({ aiOutput, responses, target }: Step3ResultProps) {
         body: JSON.stringify({ responses })
       });
 
-      if (!res.ok) throw new Error("Failed to generate extended diagnostic");
+      if (!res.ok) throw new Error(`Failed to generate extended diagnostic: ${res.status} ${res.statusText}`);
       
       const data = await res.json();
       setExtendedDiagnostic(data.extendedDiagnostic);

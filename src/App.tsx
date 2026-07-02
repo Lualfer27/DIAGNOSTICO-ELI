@@ -40,7 +40,7 @@ export default function App() {
       
       if (!res.ok) {
         const errorData = await res.json().catch(() => ({}));
-        throw new Error(errorData.error || "Fallo en la comunicación");
+        throw new Error(errorData.error || `Error del servidor: ${res.status} ${res.statusText}`);
       }
       
       const data = await res.json();
