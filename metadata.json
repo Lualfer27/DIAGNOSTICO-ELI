@@ -1,0 +1,6 @@
+{
+  "name": "El Desahogo Guiado",
+  "description": "Una experiencia de escritura terapéutica guiada y procesada por IA con un enfoque introspectivo, honesto y realista.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

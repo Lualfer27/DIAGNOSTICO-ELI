@@ -1,0 +1,31 @@
+{
+  "projectInfo": {
+    "name": "Eli App"
+  },
+  "collections": [
+    {
+      "name": "leads",
+      "description": "Users who requested the extended diagnostic PDF plan",
+      "fields": [
+        {
+          "name": "email",
+          "type": "string",
+          "description": "Email address of the user"
+        },
+        {
+          "name": "createdAt",
+          "type": "timestamp",
+          "description": "When the email was registered"
+        }
+      ],
+      "actions": [
+        {
+          "type": "create",
+          "description": "Create a new lead entry when user submits their email",
+          "security": "anonymous"
+        }
+      ],
+      "documentId": "auto"
+    }
+  ]
+}
