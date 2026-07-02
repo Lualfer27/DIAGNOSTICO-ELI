@@ -1,8 +1,59 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { motion } from 'motion/react';
-import html2pdf from 'html2pdf.js';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 import { AIResult, WritingResponses, getPromptsForTarget, WritingTarget } from '../types';
 import eliImage from '../assets/images/PERFIL_ELI.png';
+
+const downloadPdfFromElement = async (elementOrHtml: HTMLElement | string, filename: string) => {
+  let targetElement: HTMLElement;
+  let cleanup = false;
+  
+  if (typeof elementOrHtml === 'string') {
+    targetElement = document.createElement('div');
+    targetElement.innerHTML = elementOrHtml;
+    targetElement.style.position = 'absolute';
+    targetElement.style.left = '-9999px';
+    targetElement.style.top = '0';
+    targetElement.style.width = '800px';
+    document.body.appendChild(targetElement);
+    cleanup = true;
+  } else {
+    targetElement = elementOrHtml;
+  }
+
+  try {
+    const canvas = await html2canvas(targetElement, { scale: 2, useCORS: true });
+    const imgData = canvas.toDataURL('image/jpeg', 0.98);
+    
+    // A4 dimensions
+    const pdf = new jsPDF('p', 'mm', 'a4');
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+    const pageHeight = pdf.internal.pageSize.getHeight();
+    
+    let heightLeft = pdfHeight;
+    let position = 0;
+
+    pdf.addImage(imgData, 'JPEG', 0, position, pdfWidth, pdfHeight);
+    heightLeft -= pageHeight;
+
+    while (heightLeft > 0) {
+      position = heightLeft - pdfHeight;
+      pdf.addPage();
+      pdf.addImage(imgData, 'JPEG', 0, position, pdfWidth, pdfHeight);
+      heightLeft -= pageHeight;
+    }
+    
+    pdf.save(filename);
+  } catch(e) {
+    console.error("error generating pdf", e);
+  } finally {
+    if (cleanup) {
+      document.body.removeChild(targetElement);
+    }
+  }
+};
 
 interface Step3ResultProps {
   key?: string;
@@ -35,15 +86,7 @@ export function Step3Result({ aiOutput, responses, target }: Step3ResultProps) {
 
   const handleDownloadPDF = async () => {
     if (!pdfRef.current) return;
-    
-    const opt = {
-      margin:       15,
-      filename:     'radiografia_silencio.pdf',
-      image:        { type: 'jpeg' as const, quality: 0.98 },
-      html2canvas:  { scale: 2, useCORS: true },
-      jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' as const }
-    };
-    html2pdf().set(opt).from(pdfRef.current).save();
+    await downloadPdfFromElement(pdfRef.current, 'radiografia_silencio.pdf');
   };
 
   const handleGetExtendedPlan = async (e: React.FormEvent) => {
@@ -77,14 +120,7 @@ export function Step3Result({ aiOutput, responses, target }: Step3ResultProps) {
       // Allow state to update and render the hidden PDF template
       setTimeout(() => {
         if (!extendedPdfRef.current) return;
-        const opt = {
-          margin:       15,
-          filename:     'plan_liberacion_eli.pdf',
-          image:        { type: 'jpeg' as const, quality: 0.98 },
-          html2canvas:  { scale: 2, useCORS: true },
-          jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' as const }
-        };
-        html2pdf().set(opt).from(extendedPdfRef.current).save();
+        downloadPdfFromElement(extendedPdfRef.current, 'plan_liberacion_eli.pdf');
       }, 1000);
 
     } catch(err) {
@@ -206,14 +242,7 @@ export function Step3Result({ aiOutput, responses, target }: Step3ResultProps) {
             <button 
               onClick={() => {
                 if (!extendedPdfRef.current) return;
-                const opt = {
-                  margin:       15,
-                  filename:     'plan_liberacion_eli.pdf',
-                  image:        { type: 'jpeg' as const, quality: 0.98 },
-                  html2canvas:  { scale: 2, useCORS: true },
-                  jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' as const }
-                };
-                html2pdf().set(opt).from(extendedPdfRef.current).save();
+                downloadPdfFromElement(extendedPdfRef.current, 'plan_liberacion_eli.pdf');
               }}
               className="px-6 py-3 bg-green-700 text-white rounded-lg font-sans font-medium hover:bg-green-800 transition-all shadow-sm"
             >
