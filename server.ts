@@ -82,7 +82,7 @@ Debes responder estrictamente en el siguiente formato JSON, sin markdown, y sin 
 
       const aiClient = getAiClient();
       const response = await aiClient.models.generateContent({
-        model: 'gemini-2.0-flash',
+        model: 'gemini-2.5-flash',
         contents: prompt,
         config: {
           responseMimeType: "application/json",
@@ -136,7 +136,7 @@ Responde en formato JSON:
 
       const aiClient = getAiClient();
       const response = await aiClient.models.generateContent({
-        model: 'gemini-2.0-flash',
+        model: 'gemini-2.5-flash',
         contents: prompt,
         config: {
           responseMimeType: "application/json",
