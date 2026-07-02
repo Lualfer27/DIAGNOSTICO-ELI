@@ -41,14 +41,11 @@ function getAiClient() {
   return ai;
 }
 
-async function startServer() {
-  const app = express();
-  const PORT = 3000;
+export const app = express();
+app.use(express.json());
 
-  app.use(express.json());
-
-  // API Route to process the therapeutic text
-  app.post('/api/process-desahogo', async (req, res) => {
+// API Route to process the therapeutic text
+app.post('/api/process-desahogo', async (req, res) => {
     try {
       const { responses } = req.body;
       
@@ -182,6 +179,8 @@ Responde en formato JSON:
     }
   });
 
+async function startServer() {
+  const PORT = 3000;
   // Vite middleware for development
   if (process.env.NODE_ENV !== "production") {
     const vite = await createViteServer({
@@ -202,4 +201,6 @@ Responde en formato JSON:
   });
 }
 
-startServer();
+if (!process.env.VERCEL) {
+  startServer();
+}
