@@ -1,7 +1,7 @@
 import express from 'express';
 import path from 'path';
 import { GoogleGenAI } from '@google/genai';
-import { initializeApp, getApps, getApp } from 'firebase-admin/app';
+import { initializeApp, getApps, getApp, cert } from 'firebase-admin/app';
 import { getFirestore, Firestore, FieldValue } from 'firebase-admin/firestore';
 import firebaseConfig from './firebase-applet-config.json';
 
@@ -21,9 +21,8 @@ function getDb() {
         const config: any = { projectId: firebaseConfig.projectId };
         if (process.env.FIREBASE_SERVICE_ACCOUNT) {
           try {
-            const cert = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
-            const { credential } = require('firebase-admin');
-            config.credential = credential.cert(cert);
+            const certData = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
+            config.credential = cert(certData);
           } catch (e) {
             console.error("Error parsing FIREBASE_SERVICE_ACCOUNT", e);
           }
