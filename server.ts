@@ -3,7 +3,16 @@ import path from 'path';
 import { GoogleGenAI } from '@google/genai';
 import { initializeApp, getApps, getApp, cert } from 'firebase-admin/app';
 import { getFirestore, Firestore, FieldValue } from 'firebase-admin/firestore';
-import firebaseConfig from './firebase-applet-config.json';
+import fs from 'fs';
+
+let firebaseConfig: any = {};
+try {
+  const configContent = fs.readFileSync(path.resolve('./firebase-applet-config.json'), 'utf-8');
+  firebaseConfig = JSON.parse(configContent);
+} catch (e) {
+  console.warn("Could not load firebase-applet-config.json. Skipping Firebase setup.");
+}
+
 
 let ai: GoogleGenAI | null = null;
 let db: Firestore | null = null;
